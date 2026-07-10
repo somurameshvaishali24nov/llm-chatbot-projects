@@ -1,3 +1,14 @@
+# Telecom Support Chatbot (RAG)
+
+## Demo
+
+<video src="resources/demo.mov" controls width="700"></video>
+
+If your Markdown viewer doesn't render inline video (e.g. GitHub.com without the asset-upload flow), [download/view the demo directly](resources/demo.mp4).
+
+## Retrieval Overview
+
+```text
                     User Question
                           │
                           ▼
@@ -23,11 +34,9 @@
                           │
                           ▼
               ✅ One Final Answer
+```
 
-
-
-
-# Full Flow
+## Full Flow
   
 
 ```mermaid

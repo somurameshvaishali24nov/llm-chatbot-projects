@@ -1,70 +1,111 @@
-# Running the RAG tutorial in Docker (Intel Mac fix)
+# RAG Tutorial Projects
 
-Your Intel Mac can't install modern `torch` / `onnxruntime` because those
-projects stopped shipping Intel-Mac wheels. This setup runs the tutorial in a
-Linux x86_64 container — which is **native** on an Intel Mac, so it's fast —
-where every wheel in `requirements.txt` installs cleanly, unmodified.
+This workspace contains a collection of LangChain and RAG tutorials, along with two complete mini-projects that are the main focus of this repository:
 
-## One-time setup
+- Shopping Assistant: [LangChain/ai-agent/10_project_shopping_agent](LangChain/ai-agent/10_project_shopping_agent)
+- Telecom Support Chatbot: [LangChain/ai-agent/11_project_telecom_chatbot](LangChain/ai-agent/11_project_telecom_chatbot)
 
-1. Install **Docker Desktop**: https://www.docker.com/products/docker-desktop/
-   Open it and wait until it says "Docker Desktop is running".
+## Prerequisites
 
-2. Put these four files in your project folder, next to `requirements.txt`:
-   `~/Desktop/Simplilearn/RAG/Tutorial/`
-   - `Dockerfile`
-   - `docker-compose.yml`
-   - `.dockerignore`
-   - `.env.example`
+Make sure you have:
 
-3. If your tutorial needs API keys, create your `.env`:
-   ```bash
-   cd ~/Desktop/Simplilearn/RAG/Tutorial
-   cp .env.example .env
-   # then edit .env and paste in your keys
-   ```
+- Python 3.10+ installed
+- A working internet connection for installing dependencies and using the LLM APIs
+- A Groq API key for the LLM calls used by both projects
 
-## Build and run
-
-From the project folder:
+Create a `.env` file in the project root with your API key:
 
 ```bash
-cd ~/Desktop/Simplilearn/RAG/Tutorial
-
-# Build the image (first time is slow — torch is a big download)
-docker compose build
-
-# Start Jupyter Lab
-docker compose up
+cd /Users/vaishalisomuramesh-personal/Desktop/Simplilearn/RAG/Tutorial
+cat > .env <<'EOF'
+GROQ_API_KEY=your_groq_api_key_here
+EOF
 ```
 
-Then open the URL it prints, or just go to:
+## Setup
 
-**http://localhost:8888**
+From the repository root, create and activate a virtual environment and install the required packages:
 
-Your notebooks and files are bind-mounted, so anything you edit or save in
-Jupyter is written straight back to your Mac's folder. Stop with `Ctrl+C`, or
-run `docker compose down` in another terminal.
+```bash
+cd /Users/vaishalisomuramesh-personal/Desktop/Simplilearn/RAG/Tutorial
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
 
-## Everyday commands
+## Project 1: Shopping Agent
 
-| What | Command |
-|------|---------|
-| Start | `docker compose up` |
-| Start in background | `docker compose up -d` |
-| Stop | `docker compose down` |
-| Rebuild after editing requirements.txt | `docker compose build` |
-| Open a shell inside the container | `docker compose run --rm rag bash` |
-| Run a script instead of Jupyter | `docker compose run --rm rag python your_script.py` |
+Location: [LangChain/ai-agent/10_project_shopping_agent](LangChain/ai-agent/10_project_shopping_agent)
+
+This app is a Streamlit-based shopping assistant that lets users:
+
+- search products from a local SQLite database
+- get product ratings from review data
+- place orders
+- upload product images for visual matching
+
+### Run the shopping app
+
+```bash
+cd /Users/vaishalisomuramesh-personal/Desktop/Simplilearn/RAG/Tutorial/LangChain/ai-agent/10_project_shopping_agent
+streamlit run app.py
+```
+
+Then open the local URL shown in the terminal, usually:
+
+```text
+http://localhost:8501
+```
+
+### Optional quick test
+
+You can also run a simple terminal-based demo:
+
+```bash
+python shopping_agent.py
+```
+
+## Project 2: Telecom Support Chatbot
+
+Location: [LangChain/ai-agent/11_project_telecom_chatbot](LangChain/ai-agent/11_project_telecom_chatbot)
+
+This project is a RAG chatbot for telecom customer support. It uses FAQ data, resolved tickets, and a PDF guide to answer user questions.
+
+### Step 1: Build the vector database
+
+Run these ingestion scripts once before starting the chatbot:
+
+```bash
+cd /Users/vaishalisomuramesh-personal/Desktop/Simplilearn/RAG/Tutorial/LangChain/ai-agent/11_project_telecom_chatbot
+python ingest_faq.py
+python ingest_tickets.py
+python ingest_pdf.py
+```
+
+These commands populate the Chroma vector store inside the project's [LangChain/ai-agent/11_project_telecom_chatbot/chroma_store](LangChain/ai-agent/11_project_telecom_chatbot/chroma_store) folder.
+
+### Step 2: Run the chatbot
+
+#### Option A: Streamlit web app
+
+```bash
+streamlit run app.py
+```
+
+Then open:
+
+```text
+http://localhost:8501
+```
+
+#### Option B: Command-line chat
+
+```bash
+python main.py
+```
 
 ## Notes
 
-- **Don't** run `uv sync` / `uv add` on the Mac anymore — that's what hit the
-  wheel error. Dependencies now live inside the container. Edit
-  `requirements.txt` and re-run `docker compose build`.
-- The container ignores your local `venv/` and `.venv/`, so they won't
-  interfere.
-- Jupyter runs without a token for local convenience. Don't expose port 8888
-  to the internet.
-- First build downloads torch (~hundreds of MB). Later builds are cached and
-  fast unless `requirements.txt` changes.
+- If the app fails to start, check that your `.env` file contains a valid `GROQ_API_KEY`.
+- The shopping app uses the local SQLite database in [LangChain/ai-agent/10_project_shopping_agent/store.db](LangChain/ai-agent/10_project_shopping_agent/store.db).
+- The telecom app depends on the generated vector store, so make sure the ingestion scripts have been run at least once.
