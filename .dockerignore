@@ -1,0 +1,17 @@
+# Don't ship local virtualenvs / caches into the image build context
+.venv
+venv
+__pycache__
+*.pyc
+.pytest_cache
+.ipynb_checkpoints
+
+# Secrets stay out of the image (mounted at runtime instead)
+.env
+
+# Git internals
+.git
+.gitignore
+
+# OS cruft
+.DS_Store
