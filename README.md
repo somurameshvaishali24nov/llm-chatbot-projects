@@ -109,3 +109,4 @@ python main.py
 - If the app fails to start, check that your `.env` file contains a valid `GROQ_API_KEY`.
 - The shopping app uses the local SQLite database in [LangChain/ai-agent/10_project_shopping_agent/store.db](LangChain/ai-agent/10_project_shopping_agent/store.db).
 - The telecom app depends on the generated vector store, so make sure the ingestion scripts have been run at least once.
+
